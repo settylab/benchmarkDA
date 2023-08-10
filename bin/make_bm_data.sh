@@ -10,6 +10,10 @@ outdir=/fh/fast/setty_m/user/dotto/benchmarkDA/data
 root=/fh/fast/setty_m/user/dotto/benchmarkDA
 cd ${root}/scripts
 
+# set slurm parameters
+time=0:30:00
+partition=campus-new
+
 ## Run synthetic ##
 
 data_id=linear
@@ -20,8 +24,8 @@ for p in $(seq 1 1 7)
        for enr in $(seq 0.75 0.1 0.95)
        do
            sbatch -J ${data_id}-M${p}-${enr}-${seed} \
-             --time=0:30:00 \
-             --partition=general \
+             --time=${time} \
+             --partition=${partition} \
              --mem 4g \
              -o $root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.log \
              --error=$root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.err \
@@ -43,8 +47,8 @@ for p in $(seq 1 1 8)
        for enr in $(seq 0.75 0.1 0.95)
        do
            sbatch -J ${data_id}-M${p}-${enr}-${seed} \
-             --time=0:30:00 \
-             --partition=general \
+             --time=${time} \
+             --partition=${partition} \
              --mem 4g \
              -o $root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.log \
              --error=$root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.err \
@@ -66,8 +70,8 @@ for p in $(seq 1 1 3)
         for enr in $(seq 0.75 0.1 0.95)
         do
             sbatch -J ${data_id}-M${p}-${enr}-${seed} \
-              --time=0:30:00 \
-              --partition=general \
+              --time=${time} \
+              --partition=${partition} \
               --mem 4g \
               -o $root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.log \
               --error=$root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.err \
@@ -89,8 +93,8 @@ for p in $(seq 1 1 3)
         for enr in $(seq 0.75 0.1 0.95)
         do
             sbatch -J ${data_id}-M${p}-${enr}-${seed} \
-              --time=0:30:00 \
-              --partition=general \
+              --time=${time} \
+              --partition=${partition} \
               --mem 4g \
               -o $root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.log \
               --error=$root/SlurmLog/${data_id}-M${p}-${enr}-${seed}.err \
@@ -114,8 +118,8 @@ for p in RBC B PB CD14_Monocyte CD8_T CD4_T Platelet NK Granulocyte CD16_Monocyt
         for enr in $(seq 0.75 0.1 0.95)
         do
             sbatch -J ${data_id}-${p}-${enr}-${seed} \
-              --time=0:30:00 \
-              --partition=general \
+              --time=${time} \
+              --partition=${partition} \
               --mem 8g \
               -o $root/SlurmLog/${data_id}-${p}-${enr}-${seed}.log \
               --error=$root/SlurmLog/${data_id}-${p}-${enr}-${seed}.err \
@@ -138,8 +142,8 @@ for p in CD4_T-cells NK_cells CD8_T-cells B-cells_IgM+ monocytes surface- B-cell
         for enr in $(seq 0.75 0.1 0.95)
         do
             sbatch -J ${data_id}-${p}-${enr}-${seed} \
-              --time=0:30:00 \
-              --partition=general \
+              --time=${time} \
+              --partition=${partition} \
               --mem 8g \
               -o $root/SlurmLog/${data_id}-${p}-${enr}-${seed}.log \
               --error=$root/SlurmLog/${data_id}-${p}-${enr}-${seed}.err \

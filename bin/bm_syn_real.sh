@@ -6,7 +6,7 @@ module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCco
 
 # set slurm parameters
 time=4:00:00
-partition=general
+partition=campus-new
 
 data_id=$1
 root=/fh/fast/setty_m/user/dotto/benchmarkDA
