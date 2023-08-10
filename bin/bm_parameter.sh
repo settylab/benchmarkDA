@@ -9,7 +9,7 @@ time=4:00:00
 partition=general
 
 data_id=$1
-root=$HOME/Documents/proj/benchmarkDA
+root=/fh/fast/setty_m/user/dotto/benchmarkDA
 cd ${root}/scripts
 
 if [[ "$data_id" == "cluster" ]]
@@ -95,7 +95,7 @@ for pop in $pops
                     if [[ "$method" == "meld" ]]; then
                         # enable meld env
                         micromamba activate meld
-                        meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
+                        meld_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/meld/bm_meld.py
                         for beta in $betas
                             do
                             mkdir -p ${root}/benchmark/${method}/${data_id}-beta=${beta}/

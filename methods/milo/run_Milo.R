@@ -90,12 +90,12 @@ calculate_outcome <- function(long_bm){
 # main
 
 # read from csv
-sce <- readRDS("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/linear/linear_data_bm.RDS")
-X_pca <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44_batchEffect0.75.pca.csv") %>% column_to_rownames()
-coldata <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44.coldata.csv") %>% column_to_rownames()
+sce <- readRDS("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/linear/linear_data_bm.RDS")
+X_pca <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44_batchEffect0.75.pca.csv") %>% column_to_rownames()
+coldata <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44.coldata.csv") %>% column_to_rownames()
 
-# X_pca <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/real/bcr-csv/X.csv", header = FALSE)
-# coldata <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/real/bcr-csv/obs.csv") %>% column_to_rownames()
+# X_pca <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/real/bcr-csv/X.csv", header = FALSE)
+# coldata <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/real/bcr-csv/obs.csv") %>% column_to_rownames()
 # rownames(X_pca) <- rownames(coldata)
 # sce <- SingleCellExperiment(t(X_pca))
 

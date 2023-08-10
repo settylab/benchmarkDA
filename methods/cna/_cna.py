@@ -6,8 +6,7 @@ import scanpy as sc
 import os.path as osp
 
 sys.path.append(
-    osp.join(osp.expanduser("~"),
-    "Documents/proj/benchmarkDA/methods/cna/src/cna/src")
+    "/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/src/cna/sr"
 )
 import cna
 from multianndata import MultiAnnData

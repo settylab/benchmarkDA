@@ -9,7 +9,7 @@ time=6:00:00
 partition=general
 
 data_id=$1
-root=$HOME/Documents/proj/benchmarkDA
+root=/fh/fast/setty_m/user/dotto/benchmarkDA
 cd ${root}/scripts
 
 if [[ "$data_id" == "test_scale_4000" ]]
@@ -96,7 +96,7 @@ for pop in $pops
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
+                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
@@ -117,7 +117,7 @@ for pop in $pops
                     elif [[ "$method" == "cna_batch" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
+                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
@@ -139,7 +139,7 @@ for pop in $pops
                     elif [[ "$method" == "meld" ]]; then
                         # enable meld env
                         micromamba activate meld
-                        meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
+                        meld_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/meld/bm_meld.py
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \

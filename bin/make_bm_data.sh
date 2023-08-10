@@ -5,9 +5,9 @@ module purge
 module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
 
 # Set input and output data directory
-data_dir=$HOME/Documents/proj/benchmarkDA/data
-outdir=$HOME/Documents/proj/benchmarkDA/data
-cd $HOME/Documents/proj/benchmarkDA/scripts
+data_dir=/fh/fast/setty_m/user/dotto/benchmarkDA/data
+outdir=/fh/fast/setty_m/user/dotto/benchmarkDA/data
+cd /fh/fast/setty_m/user/dotto/benchmarkDA/scripts
 
 ## Run synthetic ##
 

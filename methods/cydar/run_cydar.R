@@ -110,9 +110,9 @@ calculate_outcome <- function(long_bm){
 
 
 # main
-sce <- readRDS("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/branch/branch_data_bm.RDS")
-X_pca <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/branch/benchmark_branch_pop_M1_enr0.75_seed43_batchEffect0.pca.csv") %>% column_to_rownames()
-coldata <- read.csv("/Users/mac/Documents/proj/benchmarkDA/data/synthetic/branch/benchmark_branch_pop_M1_enr0.75_seed43.coldata.csv") %>% column_to_rownames()
+sce <- readRDS("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/branch/branch_data_bm.RDS")
+X_pca <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/branch/benchmark_branch_pop_M1_enr0.75_seed43_batchEffect0.pca.csv") %>% column_to_rownames()
+coldata <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/synthetic/branch/benchmark_branch_pop_M1_enr0.75_seed43.coldata.csv") %>% column_to_rownames()
 ## Add reduced dim + coldata to sce
 colData(sce) <- DataFrame(coldata)
 reducedDim(sce, "pca_batch") <- as.matrix(X_pca)
