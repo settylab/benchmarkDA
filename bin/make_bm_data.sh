@@ -2,7 +2,7 @@
 
 # add slurm module
 module purge
-module load r/4.1.3
+module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
 
 # Set input and output data directory
 data_dir=$HOME/Documents/proj/benchmarkDA/data
