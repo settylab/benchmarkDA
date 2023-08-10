@@ -101,8 +101,8 @@ for pop in $pops
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -122,8 +122,8 @@ for pop in $pops
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -144,8 +144,8 @@ for pop in $pops
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $meld_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -162,8 +162,8 @@ for pop in $pops
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="Rscript ./run_DA.r \
                             ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                             --data_dir ${data_dir}/ \
