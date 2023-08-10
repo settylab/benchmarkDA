@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Activate conda env
-conda activate milo_bm
+micromamba activate milo_bm
 
 outdir=/nfs/team205/ed6/bin/milo_benchmarking/outfiles
 data_id=embryo

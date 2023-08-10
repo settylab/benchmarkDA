@@ -95,7 +95,7 @@ for pop in $pops
                     jobid=${data_id}-${pop}-${pop_enr}-${batch_sd}-${method}-${seed}
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
-                        source activate cna
+                        micromamba activate cna
                         cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
                         sbatch -J ${jobid} \
                           --time=${time} \
@@ -113,10 +113,10 @@ for pop in $pops
                             --seed $seed \
                             --outdir ${root}/benchmark/${data_id}/"
                         # disable cna env
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "cna_batch" ]]; then
                         # enalbe cna env
-                        source activate cna
+                        micromamba activate cna
                         cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
                         sbatch -J ${jobid} \
                           --time=${time} \
@@ -135,10 +135,10 @@ for pop in $pops
                             --outdir ${root}/benchmark/${data_id}/ \
                             --model_batch"
                         # disable cna env
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "meld" ]]; then
                         # enable meld env
-                        source activate meld
+                        micromamba activate meld
                         meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
                         sbatch -J ${jobid} \
                           --time=${time} \
@@ -156,7 +156,7 @@ for pop in $pops
                             --be_sd $batch_sd \
                             --seed $seed \
                             --outdir ${root}/benchmark/${data_id}/"
-                        conda deactivate
+                        micromamba deactivate
                     else
                         sbatch -J ${jobid} \
                           --time=${time} \

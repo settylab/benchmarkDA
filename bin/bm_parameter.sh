@@ -94,7 +94,7 @@ for pop in $pops
                     jobid_prefix=${data_id}-${pop}-${pop_enr}-${batch_sd}-${method}-${seed}
                     if [[ "$method" == "meld" ]]; then
                         # enable meld env
-                        source activate meld
+                        micromamba activate meld
                         meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
                         for beta in $betas
                             do
@@ -118,7 +118,7 @@ for pop in $pops
                                 --seed $seed \
                                 --outdir ${root}/benchmark/${method}/${data_id}-beta=${beta}/"
                         done
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "louvain" ]]; then
                         for resolution in $resolutions
                             do

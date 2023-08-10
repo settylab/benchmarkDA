@@ -5,7 +5,7 @@ pop_file=/nfs/team205/ed6/data/milo_benchmark/pop_sample_2_clean.txt
 outdir=/nfs/team205/ed6/bin/milo_benchmarking/outfiles
 
 ## Activate conda env
-conda activate milo_bm
+micromamba activate milo_bm
 
 ## Run embryo
 cat $pop_file | \
