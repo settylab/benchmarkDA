@@ -1,0 +1,17 @@
+Author: Dominik Otto dotto@fredhutch.org
+
+The covid dataset `blish_covid.seu.rds` is downloaded and referenced with
+```
+wget 'https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds'
+ln -s blish_covid.seu.rds.2 single-cell-atlas-pbmc-sars-cov2_sce.rds
+```
+
+The repository readme referenced https://www.covid19cellatlas.org/#wilk20.
+Using the "waybackmachine" I found a PBMC dataset by Wilk et al.:
+https://web.archive.org/web/20200831024311/https://www.covid19cellatlas.org/#wilk20
+with the downloadlink
+https://web.archive.org/web/20200831024311/https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
+While the original can be downloaded very slowly through archive.org I opted
+to use the original URL
+https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds
+
