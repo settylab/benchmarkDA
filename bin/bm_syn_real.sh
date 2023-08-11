@@ -2,14 +2,19 @@
 
 # add slurm module first
 module purge
-module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
+eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
 time=4:00:00
 partition=campus-new
+script_path="$(readlink -f "$0")"
 
 data_id=$1
 root=/fh/fast/setty_m/user/dotto/benchmarkDA
+root="$(readlink -f "$script_path/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "cluster" ]]
@@ -81,6 +86,7 @@ elif [[ "$data_id" == "bcr-xl" ]]
 fi
 
 
+job_number=0
 ## Run
 for pop in $pops
     do
@@ -92,18 +98,17 @@ for pop in $pops
                 do
                 for method in $R_methods
                     do
+                    ((job_number++))
+                    if [ -z "$SLURM_ARRAY_TASK_ID" ] || [ "$job_number" -ne "$SLURM_ARRAY_TASK_ID" ]; then
+                        continue
+                    fi
                     jobid=${data_id}-${pop}-${pop_enr}-${batch_sd}-${method}-${seed}
+                    echo "Doing $jobid ..."
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
-                        sbatch -J ${jobid} \
-                          --time=${time} \
-                          --partition=${partition} \
-                          --mem ${mem} \
-                          -o $root/SlurmLog/${jobid}.out \
-                          --error=$root/SlurmLog/${jobid}.err \
-                          --wrap="python $cna_bin \
+                        cna_bin="$root//methods/cna/bm_cna.py"
+                        python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
                             --pop_enr $pop_enr \
@@ -111,20 +116,13 @@ for pop in $pops
                             --pop ${pop} \
                             --be_sd $batch_sd \
                             --seed $seed \
-                            --outdir ${root}/benchmark/${data_id}/"
-                        # disable cna env
-                        micromamba deactivate
+                            --outdir ${root}/benchmark/${data_id}/
+                        exit $!
                     elif [[ "$method" == "cna_batch" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
-                        sbatch -J ${jobid} \
-                          --time=${time} \
-                          --partition=${partition} \
-                          --mem ${mem} \
-                          -o $root/SlurmLog/${jobid}.out \
-                          --error=$root/SlurmLog/${jobid}.err \
-                          --wrap="python $cna_bin \
+                        cna_bin="$root/methods/cna/bm_cna.py"
+                        python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
                             --pop_enr $pop_enr \
@@ -133,20 +131,13 @@ for pop in $pops
                             --be_sd $batch_sd \
                             --seed $seed \
                             --outdir ${root}/benchmark/${data_id}/ \
-                            --model_batch"
-                        # disable cna env
-                        micromamba deactivate
+                            --model_batch
+                        exit $!
                     elif [[ "$method" == "meld" ]]; then
                         # enable meld env
                         micromamba activate meld
-                        meld_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/meld/bm_meld.py
-                        sbatch -J ${jobid} \
-                          --time=${time} \
-                          --partition=${partition} \
-                          --mem ${mem} \
-                          -o $root/SlurmLog/${jobid}.out \
-                          --error=$root/SlurmLog/${jobid}.err \
-                          --wrap="python $meld_bin \
+                        meld_bin="$root/methods/meld/bm_meld.py"
+                          python $meld_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
                             --pop_enr $pop_enr \
@@ -155,16 +146,10 @@ for pop in $pops
                             --pop ${pop} \
                             --be_sd $batch_sd \
                             --seed $seed \
-                            --outdir ${root}/benchmark/${data_id}/"
-                        micromamba deactivate
+                            --outdir ${root}/benchmark/${data_id}/
+                        exit $!
                     else
-                        sbatch -J ${jobid} \
-                          --time=${time} \
-                          --partition=${partition} \
-                          --mem ${mem} \
-                          -o $root/SlurmLog/${jobid}.out \
-                          --error=$root/SlurmLog/${jobid}.err \
-                          --wrap="Rscript ./run_DA.r \
+                        Rscript ./run_DA.r \
                             ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                             --data_dir ${data_dir}/ \
                             --pop_enrichment $pop_enr \
@@ -173,10 +158,19 @@ for pop in $pops
                             --resolution ${resolution} \
                             --downsample ${downsample} \
                             --batchEffect_sd $batch_sd \
-                            --outdir ${root}/benchmark/${data_id}/"
+                            --outdir ${root}/benchmark/${data_id}/
+                        exit $!
                     fi
                 done
             done
         done
     done
 done
+
+# Submit a slurm array job
+jobid="benchmarkDA_syn_real_$data_id"
+cmd="sbatch -J '$jobid' --time=$time --partition=$partition \
+--mem $mem --out '$root/SlurmLog/${jobid}_%N_%A_%a.out' --array=1-$job_number \
+'$script_path' $1"
+echo "$cmd"
+eval "$cmd"
