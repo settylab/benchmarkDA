@@ -2,14 +2,18 @@
 
 # add slurm module first
 module purge
-module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
+eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
 time=6:00:00
 partition=campus-new
 
 data_id=$1
-root=/fh/fast/setty_m/user/dotto/benchmarkDA
+script_path="$(readlink -f "$0")"
+root="$(readlink -f "$script_path/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "test_scale_4000" ]]
@@ -96,7 +100,7 @@ for pop in $pops
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
+                        cna_bin="$root/methods/cna/bm_cna.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
@@ -117,7 +121,7 @@ for pop in $pops
                     elif [[ "$method" == "cna_batch" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/cna/bm_cna.py
+                        cna_bin="$root/methods/cna/bm_cna.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
@@ -139,7 +143,7 @@ for pop in $pops
                     elif [[ "$method" == "meld" ]]; then
                         # enable meld env
                         micromamba activate meld
-                        meld_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/meld/bm_meld.py
+                        meld_bin="$root/methods/meld/bm_meld.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \

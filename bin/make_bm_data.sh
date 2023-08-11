@@ -2,12 +2,15 @@
 
 # add slurm module
 module purge
-module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
 
 # Set input and output data directory
-data_dir=/fh/fast/setty_m/user/dotto/benchmarkDA/data
-outdir=/fh/fast/setty_m/user/dotto/benchmarkDA/data
-root=/fh/fast/setty_m/user/dotto/benchmarkDA
+script_path="$(readlink -f "$0")"
+root="$(readlink -f "$script_path/..")"
+data_dir="$root/data"
+outdir="$root/data"
 cd ${root}/scripts
 
 # set slurm parameters

@@ -10,10 +10,9 @@ eval "$(micromamba shell hook --shell=bash)"
 # set slurm parameters
 time=4:00:00
 partition=campus-new
-script_path="$(readlink -f "$0")"
 
 data_id=$1
-root=/fh/fast/setty_m/user/dotto/benchmarkDA
+script_path="$(readlink -f "$0")"
 root="$(readlink -f "$script_path/..")"
 cd ${root}/scripts
 

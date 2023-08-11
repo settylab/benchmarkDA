@@ -2,14 +2,18 @@
 
 # add slurm module first
 module purge
-module load R/4.3.1-gfbf-2022b ImageMagick/7.1.0-53-GCCcore-12.2.0 GSL/2.7-GCCcore-12.2.0
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
+eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
 time=4:00:00
 partition=campus-new
 
 data_id=$1
-root=/fh/fast/setty_m/user/dotto/benchmarkDA
+script_path="$(readlink -f "$0")"
+root="$(readlink -f "$script_path/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "cluster" ]]
@@ -95,7 +99,7 @@ for pop in $pops
                     if [[ "$method" == "meld" ]]; then
                         # enable meld env
                         micromamba activate meld
-                        meld_bin=/fh/fast/setty_m/user/dotto/benchmarkDA/methods/meld/bm_meld.py
+                        meld_bin="$root/methods/meld/bm_meld.py"
                         for beta in $betas
                             do
                             mkdir -p ${root}/benchmark/${method}/${data_id}-beta=${beta}/
