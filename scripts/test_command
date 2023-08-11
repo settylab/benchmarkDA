@@ -1,0 +1,1 @@
+Rscript ./make_bm_data.R /fh/fast/setty_m/user/dotto/benchmarkDA/data/real/covid19-pbmc/single-cell-atlas-pbmc-sars-cov2_sce.rds 43 RBC --pop_enrichment 0.75 --make_batch_effect no --data_id covid19-pbmc --pop_col cell.type.coarse --outdir /fh/fast/setty_m/user/dotto/benchmarkDA/data/real/covid19-pbmc/
