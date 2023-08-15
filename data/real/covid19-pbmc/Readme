@@ -3,7 +3,8 @@ Author: Dominik Otto dotto@fredhutch.org
 The covid dataset `blish_covid.seu.rds` is downloaded and referenced with
 ```
 wget 'https://hosted-matrices-prod.s3-us-west-2.amazonaws.com/Single_cell_atlas_of_peripheral_immune_response_to_SARS_CoV_2_infection-25/blish_covid.seu.rds'
-ln -s blish_covid.seu.rds.2 single-cell-atlas-pbmc-sars-cov2_sce.rds
+ln -s blish_covid.seu.rds single-cell-atlas-pbmc-sars-cov2_sce.rds
+ln -s blish_covid.seu.rds covid19-pbmc_data_bm.RDS
 ```
 
 The repository readme referenced https://www.covid19cellatlas.org/#wilk20.
