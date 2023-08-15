@@ -5,6 +5,7 @@ module purge
 module load R/4.3.1-gfbf-2022b
 module load ImageMagick/7.1.0-53-GCCcore-12.2.0
 module load GSL/2.7-GCCcore-12.2.0
+module load cuDNN/8.4.1.50-CUDA-11.7.0
 eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
@@ -106,7 +107,7 @@ for pop in $pops
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
                         micromamba activate cna
-                        cna_bin="$root//methods/cna/bm_cna.py"
+                        cna_bin="$root/methods/cna/bm_cna.py"
                         python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
