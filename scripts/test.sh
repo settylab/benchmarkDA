@@ -1,6 +1,7 @@
 root=/fh/fast/setty_m/user/dotto/benchmarkDA
 meld_bin=$root/methods/meld/bm_meld.py
 cna_bin="$root/methods/cna/bm_cna.py"
+data_id="bcr-xl"
 data_id="covid19-pbmc"
 data_dir=${root}/data/real/$data_id
 pop=CD14_Monocyte
@@ -12,6 +13,7 @@ downsample=3
 mem=32g
 seed=43
 pop_enr=0.75
+method=cydar
 
 cmd="python $meld_bin \
 --data_dir ${data_dir} \
@@ -34,4 +36,3 @@ cmd="python $cna_bin \
 --seed $seed \
 --outdir ${root}/benchmark/${data_id}/"
 echo "$cmd"
-eval "$cmd"

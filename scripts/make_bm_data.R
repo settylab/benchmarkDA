@@ -43,7 +43,9 @@ outdir <- args$outdir
 ## Load data
 print("Loading dataset...")
 sce <- readRDS(data_path)
-sce <- as.SingleCellExperiment(sce)
+if (!inherits(sce, "SingleCellExperiment")) {
+    sce <- as.SingleCellExperiment(sce)
+}
 
 # replace "_" with blank
 if (str_detect(pop, "_")) {

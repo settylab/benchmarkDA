@@ -2,6 +2,7 @@
 
 suppressPackageStartupMessages(
     {
+        library(Seurat)
         library(argparse)
         library(tidyverse)
         library(SingleCellExperiment)
@@ -51,6 +52,9 @@ bm_outdir <- args$outdir
 ## Load RDS data
 print("Loading dataset...")
 sce <- readRDS(data_path)
+if (!inherits(sce, "SingleCellExperiment")) {
+    sce <- as.SingleCellExperiment(sce)
+}
 
 ## Load coldata and PCA
 outprefix <- str_c("benchmark_", data_id, "_pop_", pop, '_enr', pop_enr, "_seed", seed)
