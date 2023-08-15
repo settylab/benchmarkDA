@@ -6,7 +6,7 @@ import numpy as np
 import scanpy as sc
 import os.path as osp
 
-lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__)), 'src/cna/sr'))
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'src/cna/sr'))
 sys.path.append(lib_path)
 import cna
 from multianndata import MultiAnnData
