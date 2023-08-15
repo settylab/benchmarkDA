@@ -13,7 +13,8 @@ partition=campus-new
 
 data_id=$1
 script_path="$(readlink -f "$0")"
-root="$(readlink -f "$script_path/..")"
+script_dir="$(dirname "$script_path")"
+root="$(readlink -f "$script_dir/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "test_scale_4000" ]]

@@ -8,7 +8,8 @@ module load GSL/2.7-GCCcore-12.2.0
 
 # Set input and output data directory
 script_path="$(readlink -f "$0")"
-root="$(readlink -f "$script_path/..")"
+script_dir="$(dirname "$script_path")"
+root="$(readlink -f "$script_dir/..")"
 data_dir="$root/data"
 outdir="$root/data"
 cd ${root}/scripts

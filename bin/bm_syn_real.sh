@@ -14,7 +14,10 @@ partition=campus-new
 
 data_id=$1
 script_path="$(readlink -f "$0")"
-root="$(readlink -f "$script_path/..")"
+script_dir="$(dirname "$script_path")"
+if [ -z "${root+x}" ]; then
+    export root="$(readlink -f "$script_dir/..")"
+fi
 cd ${root}/scripts
 
 if [[ "$data_id" == "cluster" ]]
