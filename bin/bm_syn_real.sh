@@ -9,7 +9,7 @@ module load cuDNN/8.4.1.50-CUDA-11.7.0
 eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
-time=4:00:00
+time=1-00:00:00
 partition=campus-new
 
 data_id=$1
@@ -24,7 +24,7 @@ if [[ "$data_id" == "cluster" ]]
     then
     data_dir=${root}/data/synthetic/$data_id
     pops=$(for p in $(seq 1 1 3); do echo M$p; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain milo_batch cydar_batch cna_batch louvain_batch; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain milo_batch cna_batch louvain_batch; do echo $m; done)
     batch_vec=$(for m in 0 0.75 1 1.25 1.5; do echo $m; done)
     k=30
     resolution=0.2
@@ -35,7 +35,7 @@ elif [[ "$data_id" == "cluster_balanced" ]]
     then
     data_dir=${root}/data/synthetic/$data_id
     pops=$(for p in $(seq 1 1 3); do echo M$p; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain milo_batch cydar_batch cna_batch louvain_batch; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain milo_batch cna_batch louvain_batch; do echo $m; done)
     batch_vec=$(for m in 0 0.75 1 1.25 1.5; do echo $m; done)
     k=30
     resolution=0.2
@@ -46,7 +46,7 @@ elif [[ "$data_id" == "linear" ]]
     then
     data_dir=${root}/data/synthetic/$data_id
     pops=$(for p in $(seq 1 1 7); do echo M$p; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain milo_batch cydar_batch cna_batch louvain_batch; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain milo_batch cna_batch louvain_batch; do echo $m; done)
     batch_vec=$(for m in 0 0.75 1 1.25 1.5; do echo $m; done)
     k=30
     resolution=1
@@ -57,7 +57,7 @@ elif [[ "$data_id" == "branch" ]]
     then
     data_dir=${root}/data/synthetic/$data_id
     pops=$(for p in $(seq 1 1 8); do echo M$p; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain milo_batch cydar_batch cna_batch louvain_batch; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain milo_batch cna_batch louvain_batch; do echo $m; done)
     batch_vec=$(for m in 0 0.75 1 1.25 1.5; do echo $m; done)
     k=30
     resolution=1
@@ -68,7 +68,7 @@ elif [[ "$data_id" == "covid19-pbmc" ]]
     then
     data_dir=${root}/data/real/$data_id
     pops=$(for m in RBC B PB CD14_Monocyte CD8_T CD4_T Platelet NK Granulocyte CD16_Monocyte gd_T pDC DC; do echo $m; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain; do echo $m; done)
     batch_vec=0
     k=30
     resolution=0.5
@@ -79,7 +79,7 @@ elif [[ "$data_id" == "bcr-xl" ]]
     then
     data_dir=${root}/data/real/$data_id
     pops=$(for m in CD4_T-cells NK_cells CD8_T-cells B-cells_IgM+ monocytes surface- B-cells_IgM- DC; do echo $m; done)
-    R_methods=$(for m in mellon milog daseq cydar cna meld louvain; do echo $m; done)
+    R_methods=$(for m in mellon mellon_dm milo daseq cydar cna meld louvain; do echo $m; done)
     batch_vec=0
     k=30
     resolution=0.6
