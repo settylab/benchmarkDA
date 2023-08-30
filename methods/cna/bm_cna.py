@@ -5,8 +5,15 @@ import anndata
 import numpy as np
 import pandas as pd
 import os.path as osp
+import logging
 
 from _cna import runCNA, cna2output
+
+logging.basicConfig(
+        level=logging.INFO, 
+        format='[%(asctime)s] [%(levelname)-8s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 
 def parse_args():
@@ -90,6 +97,7 @@ def runDA(args):
     adata = csv2anndata(data_path=pcaData, obs_path=colData)
     
     # run analysis using CNA method
+    logging.info("stating analysis")
     start_time = time.time()
     cna_res, md = runCNA(adata,
                          k=args.k,
@@ -98,8 +106,9 @@ def runDA(args):
                          batch_col="synth_batches" if args.model_batch else None)
     run_time = time.time() - start_time
     if cna_res.p > .05:
-        warnings.warn("Global association p-value: {} > .05".format(cna_res.p))
+        logging.warning("Global association p-value: {} > .05".format(cna_res.p))
     # get da cells with different alphas
+    logging.info("preparing the result")
     alphas = np.percentile(cna_res.fdrs['fdr'], np.arange(1e-8, 1-1e-8, 0.01) * 100)
     da_cell = cna2output(md, cna_res, out_type=args.out_type, alphas=alphas) # out: [np.array([str])]
     
@@ -117,9 +126,11 @@ def runDA(args):
         # print("AUC: ", metrics.auc(bm_out['FPR'].values, bm_out['TPR'].values))
     
     # save the benchmark result
+    logging.info("writing result csv")
     bm_resfile = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.{}".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".csv")
     bm_out.to_csv(bm_resfile, index=False)
+    logging.info("success")
 
 
 if __name__ == "__main__":

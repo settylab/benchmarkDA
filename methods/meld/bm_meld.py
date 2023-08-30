@@ -5,8 +5,15 @@ import numpy as np
 import pandas as pd
 import os.path as osp
 
+import logging
+
 from _meld import runMELD, meld2output
 
+logging.basicConfig(
+        level=logging.INFO, 
+        format='[%(asctime)s] [%(levelname)-8s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 def parse_args():
     parser = argparse.ArgumentParser("benchmark the performance of meld method.")
@@ -86,9 +93,11 @@ def runDA(args):
     pcaData = osp.join(data_dir, prefix + "_batchEffect{}.pca.csv".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd))
     colData = osp.join(data_dir, prefix + ".coldata.csv")
+    logging.info('loading data')
     adata = csv2anndata(data_path=pcaData, obs_path=colData)
     
     # run analysis using MELD method
+    logging.info('starting analysis')
     start_time = time.time()
     meld_res = runMELD(adata, k=args.k, sample_col="synth_samples", label_col="synth_labels", beta=args.beta)
     run_time = time.time() - start_time
@@ -98,10 +107,12 @@ def runDA(args):
     assert (lower < upper), \
         "lower bound is not less than upper bound"
     thresholds = np.arange(lower, upper, (upper - lower) / 100)
+    logging.info('meld output')
     da_cell = meld2output(meld_res, out_type=args.out_type, thresholds=thresholds) # out: [np.array([str])]
     
     # prepare benchmark data frame
     if args.out_type == "continuous":
+        logging.info('continuous output')
         bm_out = out2bm(da_cell, adata, run_time)
     else:
         bm_out = []
@@ -110,13 +121,16 @@ def runDA(args):
             bm_out[i][['method', 'thres', 'runtime']] = ['meld', thresholds[i], run_time]
             
     if args.out_type != "continuous":
+        logging.info('non-continuous output')
         bm_out = pd.concat(bm_out, axis=0)
         # print("AUC: ", metrics.auc(bm_out['FPR'].values, bm_out['TPR'].values))
     
     # save the benchmark result
     bm_resfile = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.meld".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd) + ".csv")
+    logging.info('writing result csv')
     bm_out.to_csv(bm_resfile, index=False)
+    logging.info('successs')
 
 
 if __name__ == "__main__":

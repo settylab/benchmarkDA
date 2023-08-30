@@ -2,14 +2,19 @@
 
 # add slurm module first
 module purge
-module load r/4.1.3
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
+eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
 time=4:00:00
-partition=general
+partition=campus-new
 
 data_id=$1
-root=$HOME/Documents/proj/benchmarkDA
+script_path="$(readlink -f "$0")"
+script_dir="$(dirname "$script_path")"
+root="$(readlink -f "$script_dir/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "cluster" ]]
@@ -94,8 +99,8 @@ for pop in $pops
                     jobid_prefix=${data_id}-${pop}-${pop_enr}-${batch_sd}-${method}-${seed}
                     if [[ "$method" == "meld" ]]; then
                         # enable meld env
-                        source activate meld
-                        meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
+                        micromamba activate meld
+                        meld_bin="$root/methods/meld/bm_meld.py"
                         for beta in $betas
                             do
                             mkdir -p ${root}/benchmark/${method}/${data_id}-beta=${beta}/
@@ -105,8 +110,8 @@ for pop in $pops
                             --time=${time} \
                             --partition=${partition} \
                             --mem ${mem} \
-                            -o $HOME/SlurmLog/${jobid}.out \
-                            --error=$HOME/SlurmLog/${jobid}.err \
+                            -o $root/SlurmLog/${jobid}.out \
+                            --error=$root/SlurmLog/${jobid}.err \
                             --wrap="python $meld_bin \
                                 --data_dir ${data_dir} \
                                 --data_id ${data_id} \
@@ -118,7 +123,7 @@ for pop in $pops
                                 --seed $seed \
                                 --outdir ${root}/benchmark/${method}/${data_id}-beta=${beta}/"
                         done
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "louvain" ]]; then
                         for resolution in $resolutions
                             do
@@ -129,8 +134,8 @@ for pop in $pops
                             --time=${time} \
                             --partition=${partition} \
                             --mem ${mem} \
-                            -o $HOME/SlurmLog/${jobid}.out \
-                            --error=$HOME/SlurmLog/${jobid}.err \
+                            -o $root/SlurmLog/${jobid}.out \
+                            --error=$root/SlurmLog/${jobid}.err \
                             --wrap="Rscript ./run_DA.r \
                                 ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                                 --data_dir ${data_dir}/ \
@@ -152,8 +157,8 @@ for pop in $pops
                             --time=${time} \
                             --partition=${partition} \
                             --mem ${mem} \
-                            -o $HOME/SlurmLog/${jobid}.out \
-                            --error=$HOME/SlurmLog/${jobid}.err \
+                            -o $root/SlurmLog/${jobid}.out \
+                            --error=$root/SlurmLog/${jobid}.err \
                             --wrap="Rscript ./run_DA.r \
                                 ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                                 --data_dir ${data_dir}/ \
@@ -175,8 +180,8 @@ for pop in $pops
                             --time=${time} \
                             --partition=${partition} \
                             --mem ${mem} \
-                            -o $HOME/SlurmLog/${jobid}.out \
-                            --error=$HOME/SlurmLog/${jobid}.err \
+                            -o $root/SlurmLog/${jobid}.out \
+                            --error=$root/SlurmLog/${jobid}.err \
                             --wrap="Rscript ./run_DA.r \
                                 ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                                 --data_dir ${data_dir}/ \
