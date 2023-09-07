@@ -54,39 +54,6 @@ milo2output <- function(milo, da_res, out_type="continuous", alpha=0.1){
   da.cell
 }
 
-
-calculate_outcome <- function(long_bm){
-  long_bm <- long_bm %>%
-    mutate(outcome=case_when(true==pred & pred!="NotDA" ~ 'TP',
-                             true!=pred & pred!="NotDA" ~ 'FP',
-                             true!=pred & pred=="NotDA" ~ 'FN',
-                             true==pred & pred=="NotDA" ~ 'TN'
-    )) %>%
-    group_by(method, outcome) %>%
-    summarise(n=n()) %>%
-    pivot_wider(id_cols=method, names_from=outcome, values_from=n, values_fill=0)
-  
-  check_cols <- c("TP","FP","FN","TN") %in% colnames(long_bm)
-  if (any(!check_cols)) {
-    add_cols <- c("TP","FP","FN","TN")[!check_cols]
-    for (col in add_cols) {
-      long_bm[[col]] <- rep(0, nrow(long_bm))
-    }
-  }
-
-  long_bm %>%
-    mutate(TPR = TP / (TP + FN),
-           FPR = FP / (FP + TN),
-           TNR = TN / (TN + FP),
-           FNR = FN / (FN + TP),
-           FDR = FP / (TP + FP),
-           Precision = TP / (TP + FP),
-           Power = 1 - FNR,
-           Accuracy = (TP + TN) / (TP + TN + FP + FN)
-    )
-}
-
-
 # main
 
 # read from csv
@@ -94,6 +61,8 @@ script_dir <- dirname(sys.frame(1)$ofile)
 sce <- readRDS(file.path(script_dir, "../../data/synthetic/linear/linear_data_bm.RDS"))
 X_pca <- read.csv(file.path(script_dir, "../../data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44_batchEffect0.75.pca.csv")) %>% column_to_rownames()
 coldata <- read.csv(file.path(script_dir, "../../data/synthetic/linear/benchmark_linear_pop_M1_enr0.75_seed44.coldata.csv")) %>% column_to_rownames()
+                     
+source(paste0(script_dir, "/../../scripts/benchmark_utils.R")) # import calculate_outcome
 
 # X_pca <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/real/bcr-csv/X.csv", header = FALSE)
 # coldata <- read.csv("/fh/fast/setty_m/user/dotto/benchmarkDA/data/real/bcr-csv/obs.csv") %>% column_to_rownames()
