@@ -7,7 +7,7 @@ import os.path as osp
 import logging
 
 from _cna import runCNA, cna2output
-from util import csv2anndata, calculate_outcome, out2bm
+from util import csv2anndata, calculate_outcome, out2bm, c_index
 
 logging.basicConfig(
         level=logging.INFO, 
@@ -56,6 +56,14 @@ def runDA(args):
                          label_col="synth_labels",
                          batch_col="synth_batches" if args.model_batch else None)
     run_time = time.time() - start_time
+    
+    cindex = c_index(cna_res.ncorrs, adata.obs['Condition2_prob'].values)
+    cindex_file == osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.{}".format(
+        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".cindex")
+    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
+    with open(cindex_file, 'w') as f:
+        f.write(str(cindex))
+    
     if cna_res.p > .05:
         logging.warning("Global association p-value: {} > .05".format(cna_res.p))
     # get da cells with different alphas

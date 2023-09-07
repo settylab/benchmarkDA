@@ -7,7 +7,7 @@ import os.path as osp
 import logging
 
 from _meld import runMELD, meld2output
-from util import csv2anndata, calculate_outcome, out2bm
+from util import csv2anndata, calculate_outcome, out2bm, c_index
 
 logging.basicConfig(
         level=logging.INFO, 
@@ -53,6 +53,14 @@ def runDA(args):
     start_time = time.time()
     meld_res = runMELD(adata, k=args.k, sample_col="synth_samples", label_col="synth_labels", beta=args.beta)
     run_time = time.time() - start_time
+    
+    cindex = c_index(meld_res, adata.obs['Condition2_prob'].values)
+    cindex_file = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.meld".format(
+        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd) + ".cindex")
+    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
+    with open(cindex_file, 'w') as f:
+        f.write(str(cindex))
+    
     # get da cells with different thresholds
     lower = 1/len(adata.obs['synth_labels'].unique()) + 1e-8
     upper = meld_res.max() - 1e-8

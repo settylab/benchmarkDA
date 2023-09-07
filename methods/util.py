@@ -48,3 +48,10 @@ def out2bm(out, adata, runtime=None):
         bm['runtime'] = runtime
     
     return bm
+
+
+def c_index(continuous_result, continuous_ground_truth):
+    mask = continuous_ground_truth[None, :] < continuous_ground_truth[:, None]
+    result = continuous_result[None, :] < continuous_result[:, None]
+    cindex = np.sum(result[mask]) / np.sum(mask)
+    return cindex
