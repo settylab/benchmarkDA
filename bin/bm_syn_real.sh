@@ -163,6 +163,7 @@ for pop in $pops
                             --dm-comp 0 \
                             --be_sd $batch_sd \
                             --seed $seed \
+                            --out-name $method \
                             --outdir ${root}/benchmark/${data_id}/
                         exit $!
                     elif [[ "$method" == "mellon_dm" ]]; then
@@ -170,6 +171,7 @@ for pop in $pops
                         micromamba activate mellon_v2
                         meld_bin="$root/methods/mellon/bm_mellon.py"
                           python $meld_bin \
+                            --ls-factor 100 \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
                             --pop_enr $pop_enr \
@@ -177,6 +179,22 @@ for pop in $pops
                             --dm-comp 10 \
                             --be_sd $batch_sd \
                             --seed $seed \
+                            --out-name $method \
+                            --outdir ${root}/benchmark/${data_id}/
+                        exit $!
+                    elif [[ "$method" == "mellon_hls" ]]; then
+                        # enable meld env
+                        micromamba activate mellon_v2
+                        meld_bin="$root/methods/mellon/bm_mellon.py"
+                          python $meld_bin \
+                            --ls-factor 100 \
+                            --data_dir ${data_dir} \
+                            --data_id ${data_id} \
+                            --pop_enr $pop_enr \
+                            --pop ${pop} \
+                            --be_sd $batch_sd \
+                            --seed $seed \
+                            --out-name $method \
                             --outdir ${root}/benchmark/${data_id}/
                         exit $!
                     else
