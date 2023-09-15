@@ -166,7 +166,7 @@ for pop in $pops
                             --out-name $method \
                             --outdir ${root}/benchmark/${data_id}/
                         exit $!
-                    elif [[ "$method" == "mellon_dm mellon_hls" ]]; then
+                    elif [[ "$method" == "mellon_dm" ]]; then
                         # enable meld env
                         micromamba activate mellon_v2
                         meld_bin="$root/methods/mellon/bm_mellon.py"
