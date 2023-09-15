@@ -1,3 +1,4 @@
+from pathlib import Path
 import argparse
 import time
 import numpy as np
@@ -55,11 +56,6 @@ def runDA(args):
     run_time = time.time() - start_time
     
     cindex = c_index(meld_res, adata.obs['Condition2_prob'].values)
-    cindex_file = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.meld".format(
-        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd) + ".cindex")
-    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
-    with open(cindex_file, 'w') as f:
-        f.write(str(cindex))
     
     # get da cells with different thresholds
     lower = 1/len(adata.obs['synth_labels'].unique()) + 1e-8
@@ -86,7 +82,14 @@ def runDA(args):
         # print("AUC: ", metrics.auc(bm_out['FPR'].values, bm_out['TPR'].values))
     
     # save the benchmark result
-    bm_resfile = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.meld".format(
+    outdir = args.outdir
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    cindex_file = osp.join(outdir, prefix + "_batchEffect{}.DAresults.meld".format(
+        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd) + ".cindex")
+    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
+    with open(cindex_file, 'w') as f:
+        f.write(str(cindex))
+    bm_resfile = osp.join(outdir, prefix + "_batchEffect{}.DAresults.meld".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd) + ".csv")
     logging.info('writing result csv')
     bm_out.to_csv(bm_resfile, index=False)

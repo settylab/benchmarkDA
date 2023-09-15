@@ -1,3 +1,4 @@
+from pathlib import Path
 import warnings
 import time
 import argparse
@@ -58,11 +59,6 @@ def runDA(args):
     run_time = time.time() - start_time
     
     cindex = c_index(cna_res.ncorrs, adata.obs['Condition2_prob'].values)
-    cindex_file == osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.{}".format(
-        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".cindex")
-    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
-    with open(cindex_file, 'w') as f:
-        f.write(str(cindex))
     
     if cna_res.p > .05:
         logging.warning("Global association p-value: {} > .05".format(cna_res.p))
@@ -85,8 +81,15 @@ def runDA(args):
         # print("AUC: ", metrics.auc(bm_out['FPR'].values, bm_out['TPR'].values))
     
     # save the benchmark result
+    outdir = args.outdir
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    cindex_file = osp.join(outdir, prefix + "_batchEffect{}.DAresults.{}".format(
+        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".cindex")
+    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
+    with open(cindex_file, 'w') as f:
+        f.write(str(cindex))
     logging.info("writing result csv")
-    bm_resfile = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.{}".format(
+    bm_resfile = osp.join(outdir, prefix + "_batchEffect{}.DAresults.{}".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".csv")
     bm_out.to_csv(bm_resfile, index=False)
     logging.info("success")

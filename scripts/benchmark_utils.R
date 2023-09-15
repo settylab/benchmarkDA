@@ -378,7 +378,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
-    cindex <- c_index(cydar_batch_res$DAres$logFC, sce$Condition2_prob)
+    cindex <- c_index(cydar_res$DAres$logFC, sce$Condition2_prob)
   } else if (method == "cydar_batch") {
     start.time <- Sys.time()
     cydar_batch_res <- run_cydar(sce, condition_col=condition_col, sample_col=sample_col,
@@ -465,7 +465,8 @@ runDA <- function(
   } else {
     benchmark_res <- bm.out
   }
-  return(benchmark_res)
+  result = list(cindex=cindex, df=benchmark_res)
+  return(result)
 }
 
 
