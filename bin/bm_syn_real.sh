@@ -171,7 +171,7 @@ for pop in $pops
                         micromamba activate mellon_v2
                         meld_bin="$root/methods/mellon/bm_mellon.py"
                           python $meld_bin \
-                            --ls-factor 100 \
+                            --ls-factor 1 \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
                             --pop_enr $pop_enr \
