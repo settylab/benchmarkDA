@@ -1,12 +1,20 @@
+from pathlib import Path
 import warnings
 import time
 import argparse
-import anndata
 import numpy as np
 import pandas as pd
 import os.path as osp
+import logging
 
 from _cna import runCNA, cna2output
+from util import csv2anndata, calculate_outcome, out2bm, c_index
+
+logging.basicConfig(
+        level=logging.INFO, 
+        format='[%(asctime)s] [%(levelname)-8s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 
 def parse_args():
@@ -26,55 +34,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-
-def csv2anndata(data_path: str, obs_path: str):
-    # read the csv files
-    X_pca = pd.read_csv(data_path, index_col=0)
-    obs = pd.read_csv(obs_path, index_col=0)
-    assert (X_pca.index == obs.index).all(), \
-        "the index of data and meta data is different from each other"
-    # create the anndata
-    adata = anndata.AnnData(X_pca, obs=obs, dtype=np.float64)
-    adata.obs.index.name = "cell"
-    return adata
-
-
-def calculate_outcome(bm: pd.DataFrame):
-    # calculate the metrics, TP, FP, TN, FN and so on.
-    TP = ((bm['true'] == bm['pred']) & (bm['pred'] != 'NotDA')).sum()
-    FP = ((bm['true'] != bm['pred']) & (bm['pred'] != 'NotDA')).sum()
-    FN = ((bm['true'] != bm['pred']) & (bm['pred'] == 'NotDA')).sum()
-    TN = ((bm['true'] == bm['pred']) & (bm['pred'] == 'NotDA')).sum()
-    
-    metrics_dic = {
-        'TP': TP, 'FP': FP,
-        'FN': FN, 'TN': TN,
-        'TPR': [TP / (TP + FN)],
-        'FPR': [FP / (FP + TN)],
-        'TNR': [TN / (TN + FP)],
-        'FNR': [FN / (FN + TP)],
-        'FDR': [FP / (TP + FP)],
-        'Precision': [TP / (TP + FP)],
-        'Power': [1 - FN / (FN + TP)],
-        'Accuracy': [(TP + TN) / (TP + TN + FP + FN)]
-    }
-    
-    return pd.DataFrame(metrics_dic, index=['metric'])
-
-
-def out2bm(out, adata, model_batch, runtime=None):
-    # prepare the data frame as output
-    bm = pd.DataFrame()
-    bm['true_prob'] = adata.obs['Condition2_prob']
-    bm['true'] = adata.obs['true_labels']
-    bm['pred'] = out
-    bm['method'] = 'cna_batch' if model_batch else 'cna'
-    if runtime:
-        bm['runtime'] = runtime
-    
-    return bm
-
-
 def runDA(args):
     # set random seed for reproducibility
     np.random.seed(args.seed)
@@ -90,6 +49,7 @@ def runDA(args):
     adata = csv2anndata(data_path=pcaData, obs_path=colData)
     
     # run analysis using CNA method
+    logging.info("stating analysis")
     start_time = time.time()
     cna_res, md = runCNA(adata,
                          k=args.k,
@@ -97,9 +57,13 @@ def runDA(args):
                          label_col="synth_labels",
                          batch_col="synth_batches" if args.model_batch else None)
     run_time = time.time() - start_time
+    
+    cindex = c_index(cna_res.ncorrs, adata.obs['Condition2_prob'].values)
+    
     if cna_res.p > .05:
-        warnings.warn("Global association p-value: {} > .05".format(cna_res.p))
+        logging.warning("Global association p-value: {} > .05".format(cna_res.p))
     # get da cells with different alphas
+    logging.info("preparing the result")
     alphas = np.percentile(cna_res.fdrs['fdr'], np.arange(1e-8, 1-1e-8, 0.01) * 100)
     da_cell = cna2output(md, cna_res, out_type=args.out_type, alphas=alphas) # out: [np.array([str])]
     
@@ -117,9 +81,18 @@ def runDA(args):
         # print("AUC: ", metrics.auc(bm_out['FPR'].values, bm_out['TPR'].values))
     
     # save the benchmark result
-    bm_resfile = osp.join(args.outdir, prefix + "_batchEffect{}.DAresults.{}".format(
+    outdir = args.outdir
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+    cindex_file = osp.join(outdir, prefix + "_batchEffect{}.DAresults.{}".format(
+        int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".cindex")
+    logging.info(f'writing c-index of {cindex} to "{cindex_file}".')
+    with open(cindex_file, 'w') as f:
+        f.write(str(cindex))
+    logging.info("writing result csv")
+    bm_resfile = osp.join(outdir, prefix + "_batchEffect{}.DAresults.{}".format(
         int(args.be_sd) if args.be_sd.is_integer() else args.be_sd, 'cna_batch' if args.model_batch else 'cna') + ".csv")
     bm_out.to_csv(bm_resfile, index=False)
+    logging.info("success")
 
 
 if __name__ == "__main__":

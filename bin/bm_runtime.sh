@@ -2,14 +2,19 @@
 
 # add slurm module first
 module purge
-module load r/4.1.3
+module load R/4.3.1-gfbf-2022b
+module load ImageMagick/7.1.0-53-GCCcore-12.2.0
+module load GSL/2.7-GCCcore-12.2.0
+eval "$(micromamba shell hook --shell=bash)"
 
 # set slurm parameters
 time=6:00:00
-partition=general
+partition=campus-new
 
 data_id=$1
-root=$HOME/Documents/proj/benchmarkDA
+script_path="$(readlink -f "$0")"
+script_dir="$(dirname "$script_path")"
+root="$(readlink -f "$script_dir/..")"
 cd ${root}/scripts
 
 if [[ "$data_id" == "test_scale_4000" ]]
@@ -95,14 +100,14 @@ for pop in $pops
                     jobid=${data_id}-${pop}-${pop_enr}-${batch_sd}-${method}-${seed}
                     if [[ "$method" == "cna" ]]; then
                         # enalbe cna env
-                        source activate cna
-                        cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
+                        micromamba activate cna
+                        cna_bin="$root/methods/cna/bm_cna.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -113,17 +118,17 @@ for pop in $pops
                             --seed $seed \
                             --outdir ${root}/benchmark/${data_id}/"
                         # disable cna env
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "cna_batch" ]]; then
                         # enalbe cna env
-                        source activate cna
-                        cna_bin=$HOME/Documents/proj/benchmarkDA/methods/cna/bm_cna.py
+                        micromamba activate cna
+                        cna_bin="$root/methods/cna/bm_cna.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $cna_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -135,17 +140,17 @@ for pop in $pops
                             --outdir ${root}/benchmark/${data_id}/ \
                             --model_batch"
                         # disable cna env
-                        conda deactivate
+                        micromamba deactivate
                     elif [[ "$method" == "meld" ]]; then
                         # enable meld env
-                        source activate meld
-                        meld_bin=$HOME/Documents/proj/benchmarkDA/methods/meld/bm_meld.py
+                        micromamba activate meld
+                        meld_bin="$root/methods/meld/bm_meld.py"
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="python $meld_bin \
                             --data_dir ${data_dir} \
                             --data_id ${data_id} \
@@ -156,14 +161,14 @@ for pop in $pops
                             --be_sd $batch_sd \
                             --seed $seed \
                             --outdir ${root}/benchmark/${data_id}/"
-                        conda deactivate
+                        micromamba deactivate
                     else
                         sbatch -J ${jobid} \
                           --time=${time} \
                           --partition=${partition} \
                           --mem ${mem} \
-                          -o $HOME/SlurmLog/${jobid}.out \
-                          --error=$HOME/SlurmLog/${jobid}.err \
+                          -o $root/SlurmLog/${jobid}.out \
+                          --error=$root/SlurmLog/${jobid}.err \
                           --wrap="Rscript ./run_DA.r \
                             ${data_dir}/${data_id}_data_bm.RDS $method $seed $pop \
                             --data_dir ${data_dir}/ \

@@ -2,6 +2,7 @@
 
 suppressPackageStartupMessages(
     {
+        library(Seurat)
         library(argparse)
         library(tidyverse)
         library(SingleCellExperiment)
@@ -51,6 +52,9 @@ bm_outdir <- args$outdir
 ## Load RDS data
 print("Loading dataset...")
 sce <- readRDS(data_path)
+if (!inherits(sce, "SingleCellExperiment")) {
+    sce <- as.SingleCellExperiment(sce)
+}
 
 ## Load coldata and PCA
 outprefix <- str_c("benchmark_", data_id, "_pop_", pop, '_enr', pop_enr, "_seed", seed)
@@ -81,7 +85,8 @@ benchmark_params = list(
 )
 
 ## Run DA method ##
-out <- runDA(sce, X_pca, coldata=coldata, method=DA_method, params=benchmark_params, d=ncol(X_pca))
+results <- runDA(sce, X_pca, coldata=coldata, method=DA_method, params=benchmark_params, d=ncol(X_pca))
 
 ## Save results ##
-write_csv(out, str_c(bm_outdir, outprefix, "_batchEffect", be_sd, ".DAresults.", DA_method, ".csv"))
+writeLines(as.character(results[["cindex"]]), str_c(bm_outdir, outprefix, "_batchEffect", be_sd, ".DAresults.", DA_method, ".cindex"))
+write_csv(results[["df"]], str_c(bm_outdir, outprefix, "_batchEffect", be_sd, ".DAresults.", DA_method, ".csv"))

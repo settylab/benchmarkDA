@@ -339,6 +339,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(milo_res$DAres$logFC, sce$Condition2_prob)
   } else if (method == "milo_batch") {
     start.time <- Sys.time()
     milo_batch_res <- run_milo(sce, condition_col=condition_col, sample_col=sample_col,
@@ -357,6 +358,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(milo_batch_res$DAres$logFC, sce$Condition2_prob)
   } else if (method == "cydar") {
     start.time <- Sys.time()
     cydar_res <- run_cydar(sce, condition_col=condition_col, sample_col=sample_col,
@@ -376,6 +378,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(cydar_res$DAres$logFC, sce$Condition2_prob)
   } else if (method == "cydar_batch") {
     start.time <- Sys.time()
     cydar_batch_res <- run_cydar(sce, condition_col=condition_col, sample_col=sample_col,
@@ -395,6 +398,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(cydar_batch_res$DAres$logFC, sce$Condition2_prob)
   } else if (method == "daseq") {
     start.time <- Sys.time()
     daseq_res <- run_daseq(sce, k.vec=params$daseq$k.vec, condition_col=condition_col, 
@@ -413,6 +417,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(daseq_res$da.pred, sce$Condition2_prob)
   } else if (method == "louvain") {
     ## Run louvain
     start.time <- Sys.time()
@@ -432,6 +437,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(louvain_res$logFC, sce$Condition2_prob)
   } else if (method == "louvain_batch") {
     start.time <- Sys.time()
     louvain_batch_res <- run_louvain_nbglm(sce, condition_col=condition_col, sample_col=sample_col, reduced.dim="pca_batch",
@@ -450,6 +456,7 @@ runDA <- function(
         bm.out[[i]]$runtime <- run_time
       }
     }
+    cindex <- c_index(louvain_batch_res$logFC, sce$Condition2_prob)
   }
   
   ## Save results
@@ -458,7 +465,8 @@ runDA <- function(
   } else {
     benchmark_res <- bm.out
   }
-  return(benchmark_res)
+  result = list(cindex=cindex, df=benchmark_res)
+  return(result)
 }
 
 
@@ -507,4 +515,17 @@ calculate_outcome <- function(long_bm){
            Power = 1 - FNR,
            Accuracy = (TP + TN)/(TP + TN + FP + FN)
     )
+}
+                            
+c_index <- function(continuous_result, continuous_ground_truth) {
+  n <- length(continuous_result)
+  
+  gt_matrix <- matrix(continuous_ground_truth, nrow = n, ncol = n)
+  cr_matrix <- matrix(continuous_result, nrow = n, ncol = n)
+  
+  mask <- t(gt_matrix) < gt_matrix
+  result <- t(cr_matrix) < cr_matrix
+  cindex <- sum(result[mask]) / sum(mask)
+  
+  return(cindex)
 }

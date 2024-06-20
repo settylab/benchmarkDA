@@ -2,7 +2,7 @@ rm(list=ls())
 setwd("~/Documents/proj/benchmark_scCut/daseq/")
 
 library(DAseq)
-python2use <- "/usr/local/anaconda3/envs/daseq/bin/python"
+python2use <- "/usr/bin/python2"
 
 # prepare the data for DAseq
 X <- read.csv("../data/bcr-csv/X.csv", header = FALSE)
